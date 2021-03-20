@@ -8,3 +8,4 @@ sample_length = 25
 propotion = 0.7
 data_mixtures_path = " "
 data_vocals_path = " "
+model_weights = ""
