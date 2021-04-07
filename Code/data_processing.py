@@ -179,6 +179,45 @@ class DataProcessing():
             song ([type]): [description]
         """
         IPython.display.Audio(song, rate=sample_rate)
+
+    def make_mixture_data_cnn(self, paths,name="spectograms"):
+        """[summary]
+
+        Args:
+            paths ([type]): [description]
+            name (str, optional): [description]. Defaults to "spectograms".
+        """
+        data_arrays = []
+        for path in paths:
+            wave = self.get_raw_wave(path)
+            stft = self.compute_stft(wave)
+            amplitude = self.compute_amplitude(stft)
+            spectogram_slices = self.split_spectogram(sample_length, amplitude)
+            # reshape sclices to feed to cnn
+            spectogram_slices = np.array(spectogram_slices).reshape(len(spectogram_slices), len(spectogram_slices[0]), len(spectogram_slices[0][0]), 1)
+            data_arrays.append(spectogram_slices)
+        
+        np.save("./mixtures_%s.npy" % name, np.vstack(data_arrays))
+
+            
+    def make_vocal_data_cnn(self, paths,name="spectograms"):
+        """[summary]
+
+        Args:
+            paths ([type]): [description]
+            name (str, optional): [description]. Defaults to "spectograms".
+        """
+        data_arrays = []
+        for path in paths:
+            wave = self.get_raw_wave(path)
+            stft = self.compute_stft(wave)
+            amplitude = self.compute_amplitude(stft)
+            labels_slices = self.labeling(amplitude)
+        #for i in range(math.ceil(sample_length/2),len(labels_slices),math.ceil(sample_length/2)):
+            data_arrays.append(labels_slices)
+        
+        np.save("./vocals_%s.npy" % name, np.vstack(data_arrays))
+
     
 
 

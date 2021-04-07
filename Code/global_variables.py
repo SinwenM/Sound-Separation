@@ -12,5 +12,7 @@ propotion = 0.7
 
 data_mixtures_path = " "
 data_vocals_path = " "
+
+mixtures_path_processed= ""
 model_weights = ""
 
