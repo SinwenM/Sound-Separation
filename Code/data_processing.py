@@ -17,7 +17,7 @@ class DataProcessing():
 
     def mixture_paths(self, path=gv.data_mixtures_path):
         """
-        Each song is inside a file, this function 
+        Each song is inside a file and , this function returns all the paths to 
 
         Args:
             path ([String]): [description]. Defaults to gv.data_mixtures_path.
@@ -35,10 +35,10 @@ class DataProcessing():
         """[summary]
 
         Args:
-            path ([String], optional): [description]. Defaults to gv.data_vocals_path.
+            path ([String]): [path for the vocals files]. Defaults to gv.data_vocals_path.
 
         Returns:
-            [tuple]: [A tuple of all vocals wav files path in the mixtures file ]
+            [tuple]: [A tuple of all vocals wav files path in the song file ]
         """
 
         paths = []
@@ -63,25 +63,25 @@ class DataProcessing():
 
     def compute_stft(self, raw_wave):
         """
-        [summary]
+        Compute tje Short-time Fourier transform
 
         Args:
             raw_wave ([type]): [description]
 
         Returns:
-            [type]: [description]
+            np.array: [A complex-valued matrix D such as np.abs(D[f, t]) is the magnitude of frequency bin f at frame t]
         """
         return librosa.stft(raw_wave, gv.window_size, hop_length=gv.hop_length)
     
     def compute_amplitude(self, stft):
-        """[summary]
+        """
 
         Args:
             stft ([type]): [description]
         """
         return librosa.power_to_db(np.abs(stft)**2)
 
-    def split_speectogram(self, sample_length = gv.sample_lenth, amplitude):
+    def split_spectogram(self, amplitude, sample_length = gv.sample_length):
         """[summary]
 
         Args:
