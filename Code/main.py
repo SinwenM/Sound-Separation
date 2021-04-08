@@ -8,4 +8,13 @@ from data_processing import DataProcessing as dp
 from model import SoundSeparationModel as sm 
 
 
+print("---------------- MAIN ----------------")
+print("Choose one Option: ")
+print("Choose one Option: ")
+print("Choose one Option: ")
+print("Choose one Option: ")
+
+
+
+
 print('hello')
