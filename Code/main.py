@@ -3,15 +3,32 @@ import sys
 import numpy as np 
 
 
-# import global_variables as gv 
-# from data_processing import DataProcessing as dp 
-# from model import SoundSeparationModel as sm 
+import global_variables as gv 
+from data_processing import DataProcessing as dp 
+from model import SoundSeparationModel as sm 
 
-def process_data(a=0):
+def process_data():
+
+    dp.make_mixture_data_cnn(gv.data_mixtures_path, name="spectograms")
+    dp.make_vocal_data_cnn(gv.data_mixtures_path, name="spectograms")
+
     print("process_data_H")
 
 
 def train_model():
+    mixture_Data = np.load(gv.mixtures_path_processed)
+    vocals_Data = np.load(gv.vocals_path_processed)
+
+    # We split data into training and test sample, we can use shuffle_set on it
+    
+    split_index = math.ceil(gv.split_ratio * len(mixture_Data))
+    mixture_training = mixture_Data[:split_index]
+    vocals_training = vocals_Data[:split_index]
+
+    mixture_test = mixture_Data[split_index:]
+    vocals_test = vocals_Data[split_index:]
+
+    sm.train(mixture_training, vocals_training, mixture_test, vocals_test, gv.validation_split, gv.epochs, gv.batch_size)
     print("train_model_h")
 
 def separate_sound():
