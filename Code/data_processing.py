@@ -32,7 +32,8 @@ class DataProcessing():
         return tuple(paths)
     
     def vocals_path(self, path=gv.data_vocals_path):
-        """[summary]
+        """
+        Loop through the whole data sets and find the path for each vocal
 
         Args:
             path ([String]): [path for the vocals files]. Defaults to gv.data_vocals_path.
@@ -49,7 +50,8 @@ class DataProcessing():
 
 
     def get_raw_wave(self, song_path):
-        """[summary]
+        """
+        Given a song we read it with python
 
         Args:
             song_path ([String]): [Path to a wav file]
@@ -75,14 +77,15 @@ class DataProcessing():
     
     def compute_amplitude(self, stft):
         """
-
+        Given the STFT of a sound we compute the amplitude need to get the spectogram
         Args:
             stft ([type]): [description]
         """
         return librosa.power_to_db(np.abs(stft)**2)
 
     def split_spectogram(self, amplitude, sample_length = gv.sample_length):
-        """[summary]
+        """
+        Given the amplitude we compute and generate a spectogram for the sound (an image representation)
 
         Args:
             amplitude ([type]): [description]
@@ -98,7 +101,8 @@ class DataProcessing():
         return tuple(slices)
 
     def labeling(self, amplitude, sample_length=gv.sample_length):
-        """[summary]
+        """
+        We create a mask for vocal where 1 is a pixel containing vocals and 0 no
 
         Args:
             amplitude ([type]): [description]
@@ -119,7 +123,8 @@ class DataProcessing():
         return tuple(slices)
     
     def sliding_window(self, amplitude, length= gv.sample_length):
-        """[summary]
+        """
+        
 
         Args:
             amplitude ([type]): [description]
@@ -139,7 +144,8 @@ class DataProcessing():
         return slices
 
     def invers_mask(self, mask):
-        """[summary]
+        """
+        
 
         Args:
             mask ([type]): [description]
@@ -221,9 +227,6 @@ class DataProcessing():
     
 
 
-
-
-        
 
 
 if __name__ == "__main__":
