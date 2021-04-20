@@ -17,17 +17,7 @@ def train_model():
 def separate_sound():
     print("separate_sound_h")
 
-def main(arg):
 
-    def invalid(): 
-         print("Invalid Value")
-
-    switcher = {
-        1: process_data,
-        2: train_model,
-        3: separate_sound,
-    }
-    return switcher.get(arg, invalid())()
 
 
 if __name__ == "__main__":
@@ -39,7 +29,7 @@ if __name__ == "__main__":
     print("Select the task you want to run \n"+
            "\t 1: Process Data for CNN\n" +
            "\t 2: Train The model\n" +
-           "\t 3: Separate Vocals from Instrument\n" +
+           "\t 3: Separate Vocals from Instruments\n" +
            "\t 4: Quit\n\n")
 
     arg = int(input("Enter your value: "))
@@ -60,5 +50,12 @@ if __name__ == "__main__":
         elif arg == 4:
             quit()
         else:
-            print("Invalid Value, Try again")
+            print("Invalid Value, Try again\n")
+
+            print("Select the task you want to run \n"+
+                "\t 1: Process Data for CNN\n" +
+                "\t 2: Train The model\n" +
+                "\t 3: Separate Vocals from Instrument\n" +
+                "\t 4: Quit\n\n")
+
             arg = int(input("Enter your value: "))
