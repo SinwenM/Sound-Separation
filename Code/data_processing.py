@@ -4,7 +4,7 @@ import librosa
 import IPython.display
 import numpy as np
 import math 
-import global_variables as gv
+import constant as cs
 
 
 class DataProcessing():
@@ -14,40 +14,57 @@ class DataProcessing():
     """
     def __init__(self):
         pass
+   
 
-    def mixture_paths(self, path=gv.data_mixtures_path):
+    def mixture_paths(self, path=cs.data_mixtures_path):
         """
         Each song is inside a file and , this function returns all the paths to 
 
         Args:
-            path ([String]): [description]. Defaults to gv.data_mixtures_path.
+            path ([String]): [description]. Defaults to cs.data_mixtures_path.
 
         Returns:
             [tuple]: [A tuple of all mixtures wav files path in the mixtures file]
         """
         paths = []
-        for p, dir, files in os.walk(path):
-            for name in [f for f in files if f.endswith(".wav")]:
-                paths.append(os.path.join(path, name))
+        for subdir, dirs, files in os.walk(path):
+            for file in files:
+                filepath = subdir + os.sep + file
+                if filepath.endswith(".wav"):
+                    paths.append(filepath)
         return tuple(paths)
     
-    def vocals_path(self, path=gv.data_vocals_path):
+    def vocals_path(self, path=cs.data_vocals_path):
         """
         Loop through the whole data sets and find the path for each vocal
 
         Args:
-            path ([String]): [path for the vocals files]. Defaults to gv.data_vocals_path.
+            path ([String]): [path for the vocals files]. Defaults to cs.data_vocals_path.
 
         Returns:
             [tuple]: [A tuple of all vocals wav files path in the song file ]
         """
 
         paths = []
-        for p, dir, files in os.walk(path):
-            for subdir in dir:
-                paths.append(os.path.join(path, subdir), "vocals.wav")
-        return tuple(path)
+        for subdir, dirs, files in os.walk("/Users/sinwenm/Documents/GM5/PFE/DATA/Sources"):
+            for file in files:
+                filepath = subdir + os.sep + file
+                if filepath.endswith("vocals.wav"):
+                       paths.append(filepath)
+        return tuple(paths)
 
+    def clean_paths(self, mixtures_paths, vocals_paths):
+        vocals = []
+        mixtures = []
+        for mix, voc in zip(mixtures_paths, vocals_paths):
+            mix_song = mix.split('/')[-2]
+            voc_song = voc.split('/')[-2]
+        
+            if voc_song == mix_song:
+                mixtures.append(mix)
+                vocals.append(voc)
+            
+        return tuple(mixtures), tuple(vocals)
 
     def get_raw_wave(self, song_path):
         """
@@ -60,7 +77,7 @@ class DataProcessing():
             [Numpy array, Int]: [this function will return an audio timeseries and a Sampling rate of it]
         """
 
-        data, _ = librosa.load(song_path, sr=gv.sample_rate, mono=True)
+        data, _ = librosa.load(song_path, sr=cs.sample_rate, mono=True)
         return data
 
     def compute_stft(self, raw_wave):
@@ -73,7 +90,7 @@ class DataProcessing():
         Returns:
             np.array: [A complex-valued matrix D such as np.abs(D[f, t]) is the magnitude of frequency bin f at frame t]
         """
-        return librosa.stft(raw_wave, gv.window_size, hop_length=gv.hop_length)
+        return librosa.stft(raw_wave, cs.window_size, hop_length=cs.hop_length)
     
     def compute_amplitude(self, stft):
         """
@@ -83,13 +100,13 @@ class DataProcessing():
         """
         return librosa.power_to_db(np.abs(stft)**2)
 
-    def split_spectogram(self, amplitude, sample_length = gv.sample_length):
+    def split_spectogram(self, amplitude, sample_length = cs.sample_length):
         """
         Given the amplitude we compute and generate a spectogram for the sound (an image representation)
 
         Args:
             amplitude ([type]): [description]
-            sample_length ([type], optional): [description]. Defaults to gv.sample_lenth.
+            sample_length ([type], optional): [description]. Defaults to cs.sample_lenth.
 
         Returns:
             [type]: [description]
@@ -100,13 +117,13 @@ class DataProcessing():
             slices.append(_slice)
         return tuple(slices)
 
-    def labeling(self, amplitude, sample_length=gv.sample_length):
+    def labeling(self, amplitude, sample_length=cs.sample_length):
         """
         We create a mask for vocal where 1 is a pixel containing vocals and 0 no
 
         Args:
             amplitude ([type]): [description]
-            sample_length ([type], optional): [description]. Defaults to gv.sample_length.
+            sample_length ([type], optional): [description]. Defaults to cs.sample_length.
 
         Returns:
             [type]: [description]
@@ -115,20 +132,20 @@ class DataProcessing():
         for i in range(0, amplitude.shape[1] // sample_length):
             _slice = []
             for j in range(0, amplitude.shape[0]):
-                if amplitude[j,i*length+(math.ceil(length/2) if length > 1 else 0)] > 0.5:
+                if amplitude[j,i*sample_length+(math.ceil(sample_length/2) if sample_length > 1 else 0)] > 0.5:
                     _slice.append(1)
                 else:
                     _slice.append(0)
             slices.append(_slice)
         return tuple(slices)
     
-    def sliding_window(self, amplitude, length= gv.sample_length):
+    def sliding_window(self, amplitude, length= cs.sample_length):
         """
         
 
         Args:
             amplitude ([type]): [description]
-            length ([type], optional): [description]. Defaults to gv.sample_length.
+            length ([type], optional): [description]. Defaults to cs.sample_length.
 
         Returns:
             [type]: [description]
@@ -165,7 +182,7 @@ class DataProcessing():
         Returns:
             [type]: [description]
         """
-        return np.multiply(self, stft, mask)
+        return np.multiply(stft, mask)
 
     def reverse_stft(self, stft):
         """[summary]
@@ -178,13 +195,7 @@ class DataProcessing():
         """
         return librosa.istft(stft, hopp_lenght, window_size)
 
-    def play_music(self, song):
-        """[summary]
 
-        Args:
-            song ([type]): [description]
-        """
-        IPython.display.Audio(song, rate=sample_rate)
 
     def make_mixture_data_cnn(self, paths,name="spectograms"):
         """[summary]
@@ -200,7 +211,10 @@ class DataProcessing():
             amplitude = self.compute_amplitude(stft)
             spectogram_slices = self.split_spectogram(sample_length, amplitude)
             # reshape sclices to feed to cnn
-            spectogram_slices = np.array(spectogram_slices).reshape(len(spectogram_slices), len(spectogram_slices[0]), len(spectogram_slices[0][0]), 1)
+            spectogram_slices = np.array(spectogram_slices).reshape(len(spectogram_slices),
+                                                                    len(spectogram_slices[0]),
+                                                                    len(spectogram_slices[0][0]),
+                                                                    1)
             data_arrays.append(spectogram_slices)
         
         np.save("./mixtures_%s.npy" % name, np.vstack(data_arrays))
