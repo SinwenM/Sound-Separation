@@ -34,7 +34,7 @@ class DataProcessing():
                     paths.append(filepath)
         return tuple(paths)
     
-    def vocals_path(self, path=cs.data_vocals_path):
+    def vocals_paths(self, path=cs.data_vocals_path):
         """
         Loop through the whole data sets and find the path for each vocal
 
@@ -115,7 +115,7 @@ class DataProcessing():
         for i in range(0, amplitude.shape[1]//sample_length):
             _slice = amplitude[:, i*sample_length: (i+1)*sample_length]
             slices.append(_slice)
-        return tuple(slices)
+        return slices
 
     def labeling(self, amplitude, sample_length=cs.sample_length):
         """
@@ -209,7 +209,7 @@ class DataProcessing():
             wave = self.get_raw_wave(path)
             stft = self.compute_stft(wave)
             amplitude = self.compute_amplitude(stft)
-            spectogram_slices = self.split_spectogram(sample_length, amplitude)
+            spectogram_slices = self.split_spectogram(amplitude=amplitude, sample_length=cs.sample_length)
             # reshape sclices to feed to cnn
             spectogram_slices = np.array(spectogram_slices).reshape(len(spectogram_slices),
                                                                     len(spectogram_slices[0]),

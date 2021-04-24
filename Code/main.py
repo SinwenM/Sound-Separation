@@ -4,15 +4,16 @@ import numpy as np
 
 
 import global_variables as gv 
-from data_processing import DataProcessing as dp 
-from model import SoundSeparationModel as sm 
+from data_processing import DataProcessing 
+from model import SoundSeparationModel 
 
 def process_data():
-
-    dp.make_mixture_data_cnn(gv.data_mixtures_path, name="spectograms")
-    dp.make_vocal_data_cnn(gv.data_mixtures_path, name="spectograms")
-
-    print("process_data_H")
+    dp  = DataProcessing()
+    mix, voc =dp.clean_paths(mixtures_paths=dp.vocals_paths(path=cs.data_vocals_path),
+                             vocals_paths=dp.mixture_paths(path=cs.data_mixtures_path))
+    
+    dp.make_mixture_data_cnn(paths=mix[1:3],name="spectograms")
+    dp.make_vocal_data_cnn(paths=voc[1:3],name="spectograms")
 
 
 def train_model():

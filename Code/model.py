@@ -2,7 +2,7 @@
 import sys
 import os 
 import math
-from keras.backend.cntk_backend import ConvertToBatch
+#from keras.backend.cntk_backend import ConvertToBatch
 from librosa.core.fft import set_fftlib
 import numpy as np
 from numpy.core.numeric import NaN 
@@ -12,14 +12,14 @@ from data_processing import DataProcessing as dp
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Activation
-from keras.optimizers import SGD
-from keras.layers.advanced_activations import LeakyReLU
+#from keras.optimizers import SGD
+#from keras.layers.advanced_activations import LeakyReLU
 
 
 class SoundSeparationModel():
 
-    def __init__(self, model=NaN):
-        self.model = model
+    def __init__(self):
+        pass
 
     def model(self):
         """[summary]
@@ -51,9 +51,9 @@ class SoundSeparationModel():
 
         model.compile(loss='binary_crossentropy', optimizer='adadelta', metrics=['accuracy'])
 
-        model.summary()
+        #model.summary()
 
-        self.model= model
+        return model
 
 
     def train(self, mixture_training, vocals_training, mixture_test, vocals_test, epochs, validation_split, batch_size):
