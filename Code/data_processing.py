@@ -54,6 +54,17 @@ class DataProcessing():
         return tuple(paths)
 
     def clean_paths(self, mixtures_paths, vocals_paths):
+        """
+
+
+        Args:
+            mixtures_paths (Tuple): [description]
+            vocals_paths (Tupe): [description]
+
+        Returns:
+            Tuple: 
+            Tuple:
+        """
         vocals = []
         mixtures = []
         for mix, voc in zip(mixtures_paths, vocals_paths):
@@ -193,7 +204,7 @@ class DataProcessing():
         Returns:
             [type]: [description]
         """
-        return librosa.istft(stft, hopp_lenght, window_size)
+        return librosa.istft(stft, cs.hop_length, cs.window_size)
 
 
 

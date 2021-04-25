@@ -1,13 +1,17 @@
 import os 
 import sys 
 import numpy as np 
+import  math
 
-
-import global_variables as gv 
+import librosa
+import constant as cs 
 from data_processing import DataProcessing 
 from model import SoundSeparationModel 
 
 def process_data():
+    """
+    This  function will be called only when the user need to process the data for the neural  network
+    """
     dp  = DataProcessing()
     mix, voc =dp.clean_paths(mixtures_paths=dp.vocals_paths(path=cs.data_vocals_path),
                              vocals_paths=dp.mixture_paths(path=cs.data_mixtures_path))
@@ -17,23 +21,42 @@ def process_data():
 
 
 def train_model():
-    mixture_Data = np.load(gv.mixtures_path_processed)
-    vocals_Data = np.load(gv.vocals_path_processed)
+    """
+    This function train the model, print the evaluation on the test set 
+    """
+    ssm = SoundSeparationModel()
 
-    # We split data into training and test sample, we can use shuffle_set on it
+    mixture_Data = np.load(cs.mixtures_path_processed)
+    vocals_Data = np.load(cs.vocals_path_processed)
+
     
-    split_index = math.ceil(gv.split_ratio * len(mixture_Data))
+    
+    split_index = math.ceil(cs.split_ratio * len(mixture_Data))
+
     mixture_training = mixture_Data[:split_index]
     vocals_training = vocals_Data[:split_index]
 
     mixture_test = mixture_Data[split_index:]
     vocals_test = vocals_Data[split_index:]
 
-    sm.train(mixture_training, vocals_training, mixture_test, vocals_test, gv.validation_split, gv.epochs, gv.batch_size)
-    print("train_model_h")
+    ssm.train(mixture_training, vocals_training, cs.validation_split, cs.epochs, cs.batch_size)
+
+    print(ssm.evaluate(mixture_test=mixture_test, vocals_test=vocals_test))
 
 def separate_sound():
-    print("separate_sound_h")
+    """
+    This  function willbe called if the user want to apply the model, 
+    before hand they will need to specify the song path in the constant file
+    The reslut will be save in a vocals.wav file 
+    """
+
+    ssm = SoundSeparationModel()
+
+    ssm.load_weights(cs.model_weights)
+    vocal = ssm.isolate(cs.song)
+
+    librosa.output.write_wav("vocals.wav", vocal, cs.sample_rate, norm=False)
+
 
 
 
