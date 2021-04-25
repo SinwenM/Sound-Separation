@@ -1,2 +1,2 @@
 # Extracting Vocals from music
-## Applying deep learning techniques for sound separation 
+## Applying CNN-2D for sound separation 
