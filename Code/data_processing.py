@@ -9,8 +9,8 @@ import constant as cs
 
 class DataProcessing():
     """
-    This Class contain all functions necessary to process sound files 
-    for the neural network in addition to a collection of functions for p
+    This Class contains all functions necessary to process sound 
+    files for the neural network.
     """
     def __init__(self):
         pass
@@ -18,13 +18,13 @@ class DataProcessing():
 
     def mixture_paths(self, path=cs.data_mixtures_path):
         """
-        Each song is inside a file and , this function returns all the paths to 
+        Each song is inside a file and this function returns all the paths for each song. 
 
         Args:
-            path ([String]): [description]. Defaults to cs.data_mixtures_path.
+            path ([String]): Path to Mixter's files. Defaults to cs.data_mixtures_path.
 
         Returns:
-            [tuple]: [A tuple of all mixtures wav files path in the mixtures file]
+            [tuple]: A tuple of all mixture's wav files path in the mixture's file
         """
         paths = []
         for subdir, dirs, files in os.walk(path):
@@ -36,13 +36,13 @@ class DataProcessing():
     
     def vocals_paths(self, path=cs.data_vocals_path):
         """
-        Loop through the whole data sets and find the path for each vocal
+        Each song's vocal is inside a file and this function returns all the paths to it. 
 
         Args:
-            path ([String]): [path for the vocals files]. Defaults to cs.data_vocals_path.
+            path ([String]): Path for the Vocal's files. Defaults to cs.data_vocals_path.
 
         Returns:
-            [tuple]: [A tuple of all vocals wav files path in the song file ]
+            [tuple]: A tuple of all vocal's wav files path.
         """
 
         paths = []
@@ -55,15 +55,17 @@ class DataProcessing():
 
     def clean_paths(self, mixtures_paths, vocals_paths):
         """
-
+        In this Data set, we are missing some vocals or mixtures and this function 
+        cleans paths returned by vocals_paths and mixture_paths to have the same
+        mixtures and vocals.
 
         Args:
-            mixtures_paths (Tuple): [description]
-            vocals_paths (Tupe): [description]
+            mixtures_paths (Tuple)
+            vocals_paths (Tupe)
 
         Returns:
-            Tuple: 
-            Tuple:
+            Tuple: cleaned mixture's paths
+            Tuple: cleaned vocals's paths
         """
         vocals = []
         mixtures = []
@@ -79,13 +81,13 @@ class DataProcessing():
 
     def get_raw_wave(self, song_path):
         """
-        Given a song we read it with python
+        This function is a warapper to the librosa function 
 
         Args:
-            song_path ([String]): [Path to a wav file]
+            song_path ([String]): Path to a wav file
 
         Returns:
-            [Numpy array, Int]: [this function will return an audio timeseries and a Sampling rate of it]
+            [Numpy array, Int]: this function will return an audio timeseries and a Sampling rate of it
         """
 
         data, _ = librosa.load(song_path, sr=cs.sample_rate, mono=True)
@@ -93,21 +95,24 @@ class DataProcessing():
 
     def compute_stft(self, raw_wave):
         """
-        Compute tje Short-time Fourier transform
+        Compute the Short-time Fourier transform of a raw sound file.
 
         Args:
             raw_wave ([type]): [description]
 
         Returns:
-            np.array: [A complex-valued matrix D such as np.abs(D[f, t]) is the magnitude of frequency bin f at frame t]
+            np.array: A complex-valued matrix D such as np.abs(D[f, t]) is the magnitude of frequency bin f at frame t
         """
         return librosa.stft(raw_wave, cs.window_size, hop_length=cs.hop_length)
     
     def compute_amplitude(self, stft):
         """
-        Given the STFT of a sound we compute the amplitude need to get the spectogram
+        Given the STFT of a sound we compute the amplitude needed to get the spectrogram.
         Args:
-            stft ([type]): [description]
+            stft ([np.ndarray])
+        Returns:
+            ([np.ndarray])
+        
         """
         return librosa.power_to_db(np.abs(stft)**2)
 
@@ -116,8 +121,8 @@ class DataProcessing():
         Given the amplitude we compute and generate a spectogram for the sound (an image representation)
 
         Args:
-            amplitude ([type]): [description]
-            sample_length ([type], optional): [description]. Defaults to cs.sample_lenth.
+            amplitude ([np.ndarray]): 
+            sample_length ([type]): size of a sample. Defaults to cs.sample_lenth.
 
         Returns:
             [type]: [description]
@@ -130,14 +135,14 @@ class DataProcessing():
 
     def labeling(self, amplitude, sample_length=cs.sample_length):
         """
-        We create a mask for vocal where 1 is a pixel containing vocals and 0 no
+        We create a mask for vocal where 1 is a pixel containing vocals and 0 no.
 
         Args:
-            amplitude ([type]): [description]
-            sample_length ([type], optional): [description]. Defaults to cs.sample_length.
+            amplitude ([type])
+            sample_length ([type]): size of a sample. Defaults to cs.sample_lenth.
 
         Returns:
-            [type]: [description]
+            [tuple]: a mask of 1 and 0.
         """
         slices = []
         for i in range(0, amplitude.shape[1] // sample_length):
@@ -155,11 +160,11 @@ class DataProcessing():
         
 
         Args:
-            amplitude ([type]): [description]
-            length ([type], optional): [description]. Defaults to cs.sample_length.
+            amplitude ([type])
+            length (int, optional): sample lenght. Defaults to cs.sample_length.
 
         Returns:
-            [type]: [description]
+            [List]: a list of 
         """
         height = amplitude.shape[0]
         amplitude = np.column_stack((np.zeros((height, math.floor(length/2))), amplitude))
@@ -173,47 +178,51 @@ class DataProcessing():
 
     def invers_mask(self, mask):
         """
+        This function invers a mask the 1's become 0 and 0 become 1.
         
 
         Args:
-            mask ([type]): [description]
+            mask ([np.array])
 
         Returns:
-            [type]: [description]
+            [np.array]
         """
         return np.where((mask==0)|(mask==1), mask^1, mask)
     
     def apply_binary_mask(self, stft, mask):
-        """[summary]
+        """
+        [summary]
 
         Args:
-            stft ([type]): [description]
-            mask ([type]): [description]
+            stft ([np.array])
+            mask ([np.array])
 
         Returns:
-            [type]: [description]
+            [np.array]
         """
         return np.multiply(stft, mask)
 
     def reverse_stft(self, stft):
-        """[summary]
+        """
+        This Function Converts a complex-valued spectrogram stft_matrix to time-series.
 
         Args:
-            stft ([type]): [description]
+            stft ([np.array])
 
         Returns:
-            [type]: [description]
+            [np.ndarray [shape=(n,)]]
         """
         return librosa.istft(stft, cs.hop_length, cs.window_size)
 
 
 
     def make_mixture_data_cnn(self, paths,name="spectograms"):
-        """[summary]
+        """
+        Process mixtures data for our model.
 
         Args:
-            paths ([type]): [description]
-            name (str, optional): [description]. Defaults to "spectograms".
+            paths ([tuple]): list of all mixtures's paths.
+            name (str): A name for the processed data file. Defaults to "spectograms".
         """
         data_arrays = []
         for path in paths:
@@ -232,11 +241,11 @@ class DataProcessing():
 
             
     def make_vocal_data_cnn(self, paths,name="spectograms"):
-        """[summary]
-
+        """
+         Process vocals data for our model.
         Args:
-            paths ([type]): [description]
-            name (str, optional): [description]. Defaults to "spectograms".
+            paths ([tuple]): list of all vocals's paths.
+            name (str): A name for the processed data file. Defaults to "spectograms".
         """
         data_arrays = []
         for path in paths:

@@ -10,7 +10,7 @@ from model import SoundSeparationModel
 
 def process_data():
     """
-    This  function will be called only when the user need to process the data for the neural  network
+    This  function will be called only when the user needs to process the data for the neural  network
     """
     dp  = DataProcessing()
     mix, voc =dp.clean_paths(mixtures_paths=dp.vocals_paths(path=cs.data_vocals_path),
@@ -22,7 +22,7 @@ def process_data():
 
 def train_model():
     """
-    This function train the model, print the evaluation on the test set 
+    This function trains the model and print the evaluation on the test set. 
     """
     ssm = SoundSeparationModel()
 
@@ -45,9 +45,9 @@ def train_model():
 
 def separate_sound():
     """
-    This  function willbe called if the user want to apply the model, 
-    before hand they will need to specify the song path in the constant file
-    The reslut will be save in a vocals.wav file 
+    This function will be called if the user wants to apply the model,
+    beforehand, they will need to specify the song path in the constant file
+    The result will be saved in a vocals.wav file   
     """
 
     ssm = SoundSeparationModel()

@@ -22,7 +22,7 @@ class SoundSeparationModel():
 
     def __init__(self):
         """
-        
+        CNN-2D model for sound separation.
 
 
         """
@@ -57,13 +57,13 @@ class SoundSeparationModel():
 
     def train(self, mixture_training, vocals_training, epochs, validation_split, batch_size):
         """
-
+        This function train the model on the training set and saves the model's weights
 
         Args:
-            mixture_training ([Numpy array]): [description]
-            vocals_training ([Numpy array]): [description]
+            mixture_training ([Numpy array]): Processed mixture's data training part
+            vocals_training ([Numpy array]): Processed vocals's data training part
             epochs ([Integer]): number of epochs
-            validation_split ([Float]): [the ratio of train and validation
+            validation_split ([Float]): the ratio of train and validation
             batch_size ([Integer]): size of the batch during the training phase
         """
         
@@ -71,11 +71,12 @@ class SoundSeparationModel():
         self.model.save_weights(cs.model_weights, overwrite=True)
     
     def evaluate(self, mixture_test, vocals_test):
-        """[summary]
+        """
+        This function evaluate our model on the test set
 
         Args:
-            mixture_test ([numpy array]): [Array of m]
-            vocals_test ([numpy array]): [Array of vocals]
+            mixture_test ([Numpy array]): Processed mixture's data testing part
+            vocals_test ([Numpy array]): Processed vocals's data testing part
 
         Returns:
             [type]: [description]
@@ -84,26 +85,28 @@ class SoundSeparationModel():
         return self.model.evaluate(mixture_test, vocals_test)
     
     def load_weights(self, path=cs.model_weights):
-        """[summary]
+        """
 
         Args:
-            path ([type], optional): [description]. Defaults to cs.model_weights.
+            path ([string]): Path to the model weights. Defaults to cs.model_weights.
 
         Returns:
-            [type]: [description]
+            
         """
 
         self.model.load_weights(path)
         
 
     def isolate(self, mixture_path):
-        """[summary]
+        """
+        Given a song this function will apply the model and retunr the vocals
 
         Args:
-            mixture_path ([type]): [description]
+            mixture_path ([String]): Path to the song that we won't to separate the vocals
+                                    from the instrumeents.
 
         Returns:
-            [type]: [description]
+            [np.array]: Time series of the vocals
         """
         dp =  DataProcessing()
 
