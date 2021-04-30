@@ -46,7 +46,7 @@ class DataProcessing():
         """
 
         paths = []
-        for subdir, dirs, files in os.walk("/Users/sinwenm/Documents/GM5/PFE/DATA/Sources"):
+        for subdir, dirs, files in os.walk(path):
             for file in files:
                 filepath = subdir + os.sep + file
                 if filepath.endswith("vocals.wav"):
